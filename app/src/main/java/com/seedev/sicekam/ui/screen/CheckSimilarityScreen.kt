@@ -79,7 +79,8 @@ fun CheckSimilarityScreen(navController: NavController) {
                 .padding(innerPadding)
                 .padding(15.dp)
         ) {
-            var text by remember { mutableStateOf("") }
+            var text1 by remember { mutableStateOf("") }
+            var text2 by remember { mutableStateOf("") }
             Text(
                 modifier = Modifier
                     .padding(bottom = 10.dp),
@@ -87,8 +88,8 @@ fun CheckSimilarityScreen(navController: NavController) {
                 fontWeight = FontWeight.Medium
             )
             CustomTextField(
-                text = text,
-                onValueChange = {},
+                text = text1,
+                onValueChange = {text1 = it},
                 placeholder = "Masukkan kalimat 1"
             )
 
@@ -101,8 +102,8 @@ fun CheckSimilarityScreen(navController: NavController) {
                 fontWeight = FontWeight.Medium
             )
             CustomTextField(
-                text = text,
-                onValueChange = {},
+                text = text2,
+                onValueChange = {text2 = it},
                 placeholder = "Masukkan kalimat 2"
             )
 
