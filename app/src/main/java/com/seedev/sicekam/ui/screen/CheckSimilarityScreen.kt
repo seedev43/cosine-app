@@ -66,7 +66,7 @@ fun CheckSimilarityScreen(navController: NavController) {
                     containerColor = BrutalGreen,
                     titleContentColor = CustomColor1
                 ),
-                title = { Text("Cek Kemiripan", fontWeight = FontWeight.Medium) },
+                title = { Text("Kembali", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = {
                         navController.popBackStack()
@@ -88,6 +88,18 @@ fun CheckSimilarityScreen(navController: NavController) {
         ) {
             var text1 by remember { mutableStateOf("") }
             var text2 by remember { mutableStateOf("") }
+
+            Text(
+                modifier = Modifier
+                    .padding(start = 0.dp, 10.dp),
+                text = "Cek Kemiripan Kalimat",
+                fontWeight = FontWeight.Bold,
+                fontSize = 24.sp,
+                color = CustomColor1
+            )
+
+            Spacer(modifier = Modifier.height(30.dp))
+
             Text(
                 modifier = Modifier
                     .padding(bottom = 10.dp),
