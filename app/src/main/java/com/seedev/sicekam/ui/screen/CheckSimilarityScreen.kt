@@ -27,6 +27,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +50,7 @@ import androidx.navigation.compose.rememberNavController
 import com.seedev.sicekam.ui.components.CustomButton
 import com.seedev.sicekam.ui.components.CustomTextField
 import com.seedev.sicekam.ui.theme.BackgroundColor
+import com.seedev.sicekam.ui.theme.BrutalGreen
 import com.seedev.sicekam.ui.theme.CustomColor1
 import com.seedev.sicekam.ui.theme.CustomShadowColor
 import com.seedev.sicekam.utils.neoBrutalism
@@ -59,6 +62,10 @@ fun CheckSimilarityScreen(navController: NavController) {
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = BrutalGreen,
+                    titleContentColor = CustomColor1
+                ),
                 title = { Text("Cek Kemiripan", fontWeight = FontWeight.Medium) },
                 navigationIcon = {
                     IconButton(onClick = {
@@ -113,7 +120,7 @@ fun CheckSimilarityScreen(navController: NavController) {
                 text = "Submit",
                 onClick = {},
                 widthPercentage = 1f,
-                backgroundColor = Color(0xFFb5ead6)
+                backgroundColor = BrutalGreen
             )
         }
     }
