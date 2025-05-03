@@ -23,7 +23,7 @@ import androidx.navigation.compose.rememberNavController
 import com.seedev.sicekam.ui.components.CustomButton
 import com.seedev.sicekam.ui.navigation.NavGraph
 import com.seedev.sicekam.ui.screen.HomeScreen
-import com.seedev.sicekam.ui.theme.CustomColor1
+import com.seedev.sicekam.ui.theme.BrutalBrown
 import com.seedev.sicekam.ui.theme.CustomShadowColor
 import com.seedev.sicekam.ui.theme.SiCeKamTheme
 

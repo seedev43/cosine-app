@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.seedev.sicekam.ui.theme.CustomColor1
+import com.seedev.sicekam.ui.theme.BrutalBrown
 import com.seedev.sicekam.ui.theme.CustomShadowColor
 
 @Composable
@@ -30,8 +30,12 @@ fun CustomButton(
     widthPercentage: Float = 0.8f, // default lebar 80%
     height: Dp = 56.dp,
     fontSize: TextUnit = 18.sp,
+    shape: Dp = 14.dp,
+    stroke: Dp = 4.dp,
+    strokeColor: Color = BrutalBrown,
+    shadowColor: Color = CustomShadowColor,
     backgroundColor: Color = Color.White,
-    contentColor: Color = CustomColor1
+    contentColor: Color = BrutalBrown
 ) {
     Box(
         modifier = modifier,
@@ -44,20 +48,20 @@ fun CustomButton(
                 .height(height) // biar ukuran sama dengan button
                 .offset(x = 6.dp, y = 6.dp) // arah shadow: kanan bawah
                 .background(
-                    color = CustomShadowColor, // shadow pekat
-                    shape = RoundedCornerShape(16.dp)
+                    color = shadowColor, // shadow pekat
+                    shape = RoundedCornerShape(shape)
                 )
         )
 
         // Button di atas shadow
         Button(
             onClick = onClick,
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(shape),
             colors = ButtonDefaults.buttonColors(
                 containerColor = backgroundColor,
                 contentColor = contentColor
             ),
-            border = BorderStroke(3.dp, CustomColor1),
+            border = BorderStroke(stroke, strokeColor),
             modifier = Modifier
                 .fillMaxWidth(widthPercentage)
                 .height(height)

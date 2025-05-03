@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.seedev.sicekam.ui.theme.BackgroundColor
-import com.seedev.sicekam.ui.theme.CustomColor1
+import com.seedev.sicekam.ui.theme.BrutalBrown
 import com.seedev.sicekam.ui.theme.CustomShadowColor
 
 @Composable
@@ -29,11 +29,11 @@ fun CustomTextField(
     onValueChange: (String) -> Unit,
     placeholder: String = "",
     height: Dp = 120.dp,
+    strokeColor: Color = BrutalBrown,
     shadowColor: Color = CustomShadowColor,
     backgroundColor: Color = BackgroundColor,
-    shape: Dp = 16.dp,
-    borderStroke: Dp = 3.dp,
-    strokeColor: Color = CustomColor1
+    shape: Dp = 14.dp,
+    borderStroke: Dp = 4.dp,
 ) {
     Box(
         modifier = Modifier,
@@ -57,7 +57,7 @@ fun CustomTextField(
                 .height(height)
                 .background(backgroundColor, shape = RoundedCornerShape(shape))
                 .border(BorderStroke(borderStroke, strokeColor), shape = RoundedCornerShape(shape))
-                .padding(10.dp),
+                .padding(12.dp),
             textStyle = TextStyle(
                 fontSize = 14.sp
             ),
