@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -69,6 +72,29 @@ fun CheckSimilarityScreen(navController: NavController) {
     var text2 by remember { mutableStateOf("") }
     var result by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
+
+    fun submitAction() {
+        if (text1.isNotBlank() && text2.isNotBlank()) {
+            isLoading = true
+            coroutineScope.launch {
+                try {
+                    val response = RetrofitClient.service.checkSimilarity(
+                        text1, text2
+//                                    CheckSimilarityRequest(text1, text2)
+                    )
+                    result = "Skor Kemiripan: ${response.result.similarityPercent}\nStatus Kemiripan: ${response.result.similarityStatus}"
+                } catch (e: Exception) {
+                    Log.e("ERROR NICH", e.toString())
+                    e.printStackTrace()
+                    result = "Terjadi kesalahan! Mohon coba beberapa saat lagi."
+                } finally {
+                    isLoading = false
+                }
+            }
+        } else {
+            result = "Kalimat tidak boleh kosong!"
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -129,28 +155,7 @@ fun CheckSimilarityScreen(navController: NavController) {
 
             CustomButton(
                 text = if (isLoading) "Loading..." else "Submit",
-                onClick = {
-                    if (text1.isNotBlank() && text2.isNotBlank()) {
-                        isLoading = true
-                        coroutineScope.launch {
-                            try {
-                                val response = RetrofitClient.service.checkSimilarity(
-                                    text1, text2
-//                                    CheckSimilarityRequest(text1, text2)
-                                )
-                                result = "Skor Kemiripan: ${response.result.similarityPercent}\nStatus Kemiripan: ${response.result.similarityStatus}"
-                            } catch (e: Exception) {
-                                Log.e("ERROR NICH", e.toString())
-                                e.printStackTrace()
-                                result = "Terjadi kesalahan! Mohon coba beberapa saat lagi."
-                            } finally {
-                                isLoading = false
-                            }
-                        }
-                    } else {
-                        result = "Kalimat tidak boleh kosong!"
-                    }
-                },
+                onClick = { submitAction() },
                 widthPercentage = 1f,
                 backgroundColor = BrutalGreen
             )
@@ -158,13 +163,66 @@ fun CheckSimilarityScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(20.dp))
 
             if (result.isNotBlank()) {
-                Text(
-                    text = result,
-                    color = Color.Black,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(top = 10.dp)
-                )
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // Card untuk menampilkan hasil kemiripan
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Color.White)
+                        .border(
+                            BorderStroke(2.dp, BrutalBrown),
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .padding(16.dp)
+                ) {
+                    Column {
+                        Text(
+                            text = "Hasil Kemiripan",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            color = BrutalBrown
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = result,
+                            fontSize = 16.sp,
+                            color = Color.Black
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            Button(
+                                onClick = {
+                                    // Simpan ke riwayat (misalnya ke local db)
+                                    Log.d("RIWAYAT", "Disimpan ke riwayat: $result")
+                                    // TODO: Tambahkan penyimpanan ke local storage/Room
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("Simpan")
+                            }
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            Button(
+                                onClick = {
+                                    result = ""
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("Jangan Simpan")
+                            }
+                        }
+                    }
+                }
             }
+
         }
     }
 }
