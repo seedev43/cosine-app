@@ -26,6 +26,7 @@ import com.seedev.sicekam.ui.theme.CustomShadowColor
 fun CustomButton(
     text: String,
     onClick: () -> Unit,
+    buttonActive: Boolean = true,
     modifier: Modifier = Modifier,
     widthPercentage: Float = 0.8f, // default lebar 80%
     height: Dp = 56.dp,
@@ -55,6 +56,7 @@ fun CustomButton(
 
         // Button di atas shadow
         Button(
+            enabled = buttonActive,
             onClick = onClick,
             shape = RoundedCornerShape(shape),
             colors = ButtonDefaults.buttonColors(

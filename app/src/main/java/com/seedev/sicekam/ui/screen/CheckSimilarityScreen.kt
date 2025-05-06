@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,10 +17,13 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MailOutline
@@ -30,6 +34,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
@@ -45,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -53,47 +60,82 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.google.gson.Gson
 import com.seedev.sicekam.api.RetrofitClient
+import com.seedev.sicekam.model.SimilarityResult
 import com.seedev.sicekam.ui.components.CustomButton
 import com.seedev.sicekam.ui.components.CustomTextField
 import com.seedev.sicekam.ui.theme.BackgroundColor
 import com.seedev.sicekam.ui.theme.BrutalGreen
 import com.seedev.sicekam.ui.theme.BrutalBrown
+import com.seedev.sicekam.ui.theme.BrutalRed
 import com.seedev.sicekam.ui.theme.CustomShadowColor
+import com.seedev.sicekam.utils.SharedPrefHelper
 import com.seedev.sicekam.utils.neoBrutalism
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
 @Composable
 fun CheckSimilarityScreen(navController: NavController) {
+    val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     var text1 by remember { mutableStateOf("") }
     var text2 by remember { mutableStateOf("") }
     var result by remember { mutableStateOf("") }
+    var temp by remember {
+        mutableStateOf(
+            SimilarityResult(
+                originalText1 = "",
+                originalText2 = "",
+                processedText1 = "",
+                processedText2 = "",
+                similarity = 0.0,
+                similarityPercent = "",
+                similarityStatus = "",
+            )
+        )
+    }
+
     var isLoading by remember { mutableStateOf(false) }
+    var buttonActive by remember { mutableStateOf(false) }
 
     fun submitAction() {
         if (text1.isNotBlank() && text2.isNotBlank()) {
             isLoading = true
+            result = ""
+            temp = SimilarityResult(
+                originalText1 = "",
+                originalText2 = "",
+                processedText1 = "",
+                processedText2 = "",
+                similarity = 0.0,
+                similarityPercent = "",
+                similarityStatus = "",
+            )
+
             coroutineScope.launch {
                 try {
-                    val response = RetrofitClient.service.checkSimilarity(
-                        text1, text2
-//                                    CheckSimilarityRequest(text1, text2)
+                    val response = RetrofitClient.service.checkSimilarity(text1, text2)
+                    temp = SimilarityResult(
+                        originalText1 = text1,
+                        originalText2 = text2,
+                        processedText1 = response.result.processedText1,
+                        processedText2 = response.result.processedText2,
+                        similarity = response.result.similarity,
+                        similarityPercent = response.result.similarityPercent,
+                        similarityStatus = response.result.similarityStatus
                     )
                     result = "Skor Kemiripan: ${response.result.similarityPercent}\nStatus Kemiripan: ${response.result.similarityStatus}"
                 } catch (e: Exception) {
-                    Log.e("ERROR NICH", e.toString())
                     e.printStackTrace()
                     result = "Terjadi kesalahan! Mohon coba beberapa saat lagi."
                 } finally {
                     isLoading = false
                 }
             }
-        } else {
-            result = "Kalimat tidak boleh kosong!"
-        }
+        } 
     }
 
     Scaffold(
@@ -118,12 +160,16 @@ fun CheckSimilarityScreen(navController: NavController) {
                     }
                 }
             )
-        }
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(15.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             Text(
                 modifier = Modifier.padding(bottom = 10.dp),
@@ -165,63 +211,83 @@ fun CheckSimilarityScreen(navController: NavController) {
             if (result.isNotBlank()) {
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // Card untuk menampilkan hasil kemiripan
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Color.White)
-                        .border(
-                            BorderStroke(2.dp, BrutalBrown),
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .padding(16.dp)
+                    modifier = Modifier,
+                    contentAlignment = Alignment.Center
                 ) {
-                    Column {
-                        Text(
-                            text = "Hasil Kemiripan",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            color = BrutalBrown
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = result,
-                            fontSize = 16.sp,
-                            color = Color.Black
-                        )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .matchParentSize()
+//                        .height(200.dp)
+                            .offset(x = 6.dp, y = 6.dp)
+                            .background(
+                                color = CustomShadowColor,
+                                shape = RoundedCornerShape(14.dp)
+                            )
+                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+//                        .wrapContentHeight()
+//                        .height(200.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(BackgroundColor)
+                            .border(
+                                BorderStroke(4.dp, BrutalBrown),
+                                shape = RoundedCornerShape(14.dp)
+                            )
+                            .padding(16.dp)
+                    ) {
+                        Column {
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Hasil Kemiripan",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                color = BrutalBrown
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = result,
+                                fontSize = 16.sp,
+                                color = Color.Black
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            Button(
-                                onClick = {
-                                    // Simpan ke riwayat (misalnya ke local db)
-                                    Log.d("RIWAYAT", "Disimpan ke riwayat: $result")
-                                    // TODO: Tambahkan penyimpanan ke local storage/Room
-                                },
-                                modifier = Modifier.weight(1f)
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
-                                Text("Simpan")
-                            }
 
-                            Spacer(modifier = Modifier.width(8.dp))
+                                CustomButton(
+                                    text = "Simpan",
+                                    onClick = {
+                                        SharedPrefHelper.saveToHistory(context, temp)
+                                        coroutineScope.launch {
+                                            snackbarHostState.showSnackbar("Berhasil disimpan ke riwayat")
+                                        }
+                                        result = ""
+                                    },
+                                    fontSize = 14.sp,
+                                    widthPercentage = 0.4f,
+                                    height = 40.dp,
+                                    backgroundColor = BrutalGreen
+                                )
 
-                            Button(
-                                onClick = {
-                                    result = ""
-                                },
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text("Jangan Simpan")
+                                CustomButton(text = "Jangan Simpan",
+                                    onClick = { result = "" },
+                                    fontSize = 14.sp,
+                                    height = 40.dp,
+                                    backgroundColor = BrutalRed
+                                )
                             }
                         }
+
                     }
                 }
             }
+                    Spacer(modifier = Modifier.height(20.dp))
 
         }
     }
