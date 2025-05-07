@@ -146,19 +146,28 @@ fun CheckSimilarityScreen(navController: NavController) {
                     containerColor = BrutalGreen,
                     titleContentColor = BrutalBrown
                 ),
-                title = {},
+                title = { Text("Cek Kemiripan", color = BrutalBrown) },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        navController.popBackStack()
-                    }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            modifier = Modifier.size(30.dp),
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
                             tint = BrutalBrown
                         )
                     }
-                }
+                },
+//                navigationIcon = {
+//                    IconButton(onClick = {
+//                        navController.popBackStack()
+//                    }) {
+//                        Icon(
+//                            modifier = Modifier.size(30.dp),
+//                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+//                            contentDescription = "Back",
+//                            tint = BrutalBrown
+//                        )
+//                    }
+//                }
             )
         },
         snackbarHost = {

@@ -1,8 +1,11 @@
 package com.seedev.sicekam.ui.screen
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
@@ -20,9 +23,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.seedev.sicekam.model.SimilarityResult
+import com.seedev.sicekam.ui.components.CustomButton
+import com.seedev.sicekam.ui.theme.BackgroundColor
 import com.seedev.sicekam.ui.theme.BrutalBrown
 import com.seedev.sicekam.ui.theme.BrutalGreen
 import com.seedev.sicekam.ui.theme.BrutalRed
+import com.seedev.sicekam.ui.theme.CustomShadowColor
 import com.seedev.sicekam.utils.SharedPrefHelper
 import kotlinx.coroutines.launch
 
@@ -37,7 +43,7 @@ fun HistoryScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Riwayat Kemiripan", color = BrutalBrown) },
+                title = { Text("Riwayat Perhitungan", color = BrutalBrown) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = BrutalGreen),
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -52,7 +58,8 @@ fun HistoryScreen(navController: NavController) {
                     if (historyList.isNotEmpty()) {
                         TextButton(onClick = {
                             SharedPrefHelper.clearHistory(context)
-                            historyList.clear()
+                            historyList = mutableListOf()
+
                             coroutineScope.launch {
                                 snackbarHostState.showSnackbar("Semua riwayat dihapus")
                             }
@@ -82,33 +89,73 @@ fun HistoryScreen(navController: NavController) {
                     .padding(16.dp)
             ) {
                 items(historyList) { item ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 12.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        elevation = CardDefaults.cardElevation(4.dp)
+                    Box(
+                        modifier = Modifier.padding(bottom = 20.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text("Kalimat 1: ${item.originalText1}", fontSize = 14.sp)
-                            Text("Kalimat 2: ${item.originalText2}", fontSize = 14.sp)
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text("Kemiripan: ${item.similarityPercent}", fontSize = 14.sp)
-                            Text("Status: ${item.similarityStatus}", fontSize = 14.sp)
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Button(
-                                onClick = {
-                                    SharedPrefHelper.removeFromHistory(context, item)
-                                    historyList = SharedPrefHelper.getHistory(context).toMutableList()
-                                    coroutineScope.launch {
-                                        snackbarHostState.showSnackbar("Riwayat dihapus")
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .matchParentSize()
+                                .offset(x = 6.dp, y = 6.dp) // arah shadow: kanan bawah
+                                .background(
+                                    color = CustomShadowColor, // shadow pekat
+                                    shape = RoundedCornerShape(14.dp)
+                                )
+                        )
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+//                                .padding(bottom = 12.dp),
+                            colors = CardDefaults.cardColors(containerColor = BackgroundColor, contentColor = BrutalBrown),
+                            border = BorderStroke(3.dp, BrutalBrown)
+//                            elevation = CardDefaults.cardElevation(4.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text("Kalimat 1: ${item.originalText1}", fontSize = 14.sp)
+                                Text("Kalimat 2: ${item.originalText2}", fontSize = 14.sp)
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Column {
+                                        Text("Kemiripan: ${item.similarityPercent}", fontSize = 14.sp)
+                                        Text("Status: ${item.similarityStatus}", fontSize = 14.sp)
                                     }
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = BrutalRed),
-                                modifier = Modifier.align(Alignment.End)
-                            ) {
-                                Text("Hapus", color = Color.White)
+//                                    Button(
+//                                        onClick = {
+//                                            SharedPrefHelper.removeFromHistory(context, item)
+//                                            historyList =
+//                                                SharedPrefHelper.getHistory(context).toMutableList()
+//                                            coroutineScope.launch {
+//                                                snackbarHostState.showSnackbar("Riwayat dihapus")
+//                                            }
+//                                        },
+//                                        colors = ButtonDefaults.buttonColors(containerColor = BrutalRed)
+//                                    ) {
+//                                        Text("Hapus", color = Color.White)
+//                                    }
+                                    CustomButton(
+                                        text = "Hapus",
+                                        onClick = {
+                                            SharedPrefHelper.removeFromHistory(context, item)
+                                            historyList =
+                                                SharedPrefHelper.getHistory(context).toMutableList()
+                                            coroutineScope.launch {
+                                                snackbarHostState.showSnackbar("Riwayat dihapus")
+                                            }
+                                        },
+                                        height = 40.dp,
+//                                        widthPercentage = 0.4f,
+                                        fontSize = 16.sp,
+                                        backgroundColor = BrutalRed
+                                    )
+                                }
                             }
+                        Spacer(modifier = Modifier.height(20.dp))
                         }
                     }
                 }
