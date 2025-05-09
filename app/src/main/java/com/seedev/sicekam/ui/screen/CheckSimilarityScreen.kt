@@ -125,7 +125,8 @@ fun CheckSimilarityScreen(navController: NavController) {
                         processedText2 = response.result.processedText2,
                         similarity = response.result.similarity,
                         similarityPercent = response.result.similarityPercent,
-                        similarityStatus = response.result.similarityStatus
+                        similarityStatus = response.result.similarityStatus,
+                        timestamp = System.currentTimeMillis()
                     )
                     result = "Skor Kemiripan: ${response.result.similarityPercent}\nStatus Kemiripan: ${response.result.similarityStatus}"
                 } catch (e: Exception) {

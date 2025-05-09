@@ -31,6 +31,10 @@ import com.seedev.sicekam.ui.theme.BrutalRed
 import com.seedev.sicekam.ui.theme.CustomShadowColor
 import com.seedev.sicekam.utils.SharedPrefHelper
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 @ExperimentalMaterial3Api
 @Composable
@@ -93,7 +97,6 @@ fun HistoryScreen(navController: NavController) {
                         modifier = Modifier.padding(bottom = 20.dp),
                         contentAlignment = Alignment.Center
                     ) {
-
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -115,15 +118,23 @@ fun HistoryScreen(navController: NavController) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text("Kalimat 1: ${item.originalText1}", fontSize = 14.sp)
                                 Text("Kalimat 2: ${item.originalText2}", fontSize = 14.sp)
-                                Spacer(modifier = Modifier.height(8.dp))
+                                Text("Kemiripan: ${item.similarityPercent}", fontSize = 14.sp)
+                                Text("Status: ${item.similarityStatus}", fontSize = 14.sp)
+                                Text(
+                                    text = "Waktu: ${SimpleDateFormat("dd MMM yyyy, HH:mm", Locale("id", "ID")).apply {
+                                        timeZone = TimeZone.getTimeZone("Asia/Jakarta")
+                                    }.format(Date(item.timestamp))}",
+                                    fontSize = 12.sp
+                                )
+
+//                                Spacer(modifier = Modifier.height(8.dp))
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
+                                    verticalAlignment = Alignment.Bottom,
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Column {
-                                        Text("Kemiripan: ${item.similarityPercent}", fontSize = 14.sp)
-                                        Text("Status: ${item.similarityStatus}", fontSize = 14.sp)
+
                                     }
 //                                    Button(
 //                                        onClick = {
@@ -149,13 +160,13 @@ fun HistoryScreen(navController: NavController) {
                                             }
                                         },
                                         height = 40.dp,
-//                                        widthPercentage = 0.4f,
+                                        widthPercentage = 0.3f,
                                         fontSize = 16.sp,
                                         backgroundColor = BrutalRed
                                     )
                                 }
                             }
-                        Spacer(modifier = Modifier.height(20.dp))
+//                        Spacer(modifier = Modifier.height(20.dp))
                         }
                     }
                 }
