@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "SiCeKam"
+rootProject.name = "Check Similarity"
 include(":app")

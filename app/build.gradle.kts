@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.seedev.sicekam"
+    namespace = "com.seedev.checksimilarity"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.seedev.sicekam"
+        applicationId = "com.seedev.checksimilarity"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

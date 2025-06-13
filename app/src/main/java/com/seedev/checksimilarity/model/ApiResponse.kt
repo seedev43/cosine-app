@@ -1,0 +1,24 @@
+package com.seedev.checksimilarity.model
+
+import com.google.gson.annotations.SerializedName
+
+data class ApiResponse(
+    val success: Boolean,
+    val result: Result
+)
+
+data class Result(
+    @SerializedName("original_text1")
+    val originalText1: String,
+    @SerializedName("original_text2")
+    val originalText2: String,
+    @SerializedName("processed_text1")
+    val processedText1: String,
+    @SerializedName("processed_text2")
+    val processedText2: String,
+    val similarity: Double,
+    @SerializedName("similarity_percent")
+    val similarityPercent: String,
+    @SerializedName("similarity_status")
+    val similarityStatus: String,
+)
